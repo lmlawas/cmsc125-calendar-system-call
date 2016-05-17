@@ -648,7 +648,7 @@ int console_execute(const char *str)
                 }
                 else  
     if (strcmp(u,"ver")==0) {
-		printf("%s",dex32_versionstring);
+    printf("%s",dex32_versionstring);
                 }
                 else
     if (strcmp(u,"cpuid")==0)
@@ -887,7 +887,7 @@ int console_execute(const char *str)
              }
              else
     if (strcmp(u,"lsext")==0)
-    			 {
+           {
               extension_list();
              }
              else
@@ -921,13 +921,13 @@ int console_execute(const char *str)
              }
              else         
     if (strcmp(u,"unload")==0)
-    			 {
+           {
              u=strtok(0," ");
              if (u!=0)
-             	{
-	             if (module_unload_library(u)==-1)
+              {
+               if (module_unload_library(u)==-1)
                 printf("Error unloading library");
-   	         };
+             };
              }
              else
     if (strcmp(u,"demo_graphics")==0)
@@ -936,54 +936,238 @@ int console_execute(const char *str)
               }
     
               else
-                if(strcmp(u, "cal")==0){
-        int isValidMonth(char month[]){
-            char *months1[] = {
-                "",
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            };
-            char *months2[] = {
-                "",
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sept",
-                "Oct",
-                "Nov",
-                "Dec",
-            };
-            int i;
+    if(strcmp(u, "cal")==0){
+    // major reference: https://www.codingunit.com/how-to-make-a-calendar-in-c
+                  int NUMBER_OF_MONTHS = 12;
+                  int month, year, daycode;
+                  char *m, *y;
+                  int daysInMonth[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+                  char *months[] = {
+                    " ",
+                    "\nJanuary",
+                    "\nFebruary",
+                    "\nMarch",
+                    "\nApril",
+                    "\nMay",
+                    "\nJune",
+                    "\nJuly",
+                    "\nAugust",
+                    "\nSeptember",
+                    "\nOctober",
+                    "\nNovember",
+                    "\nDecember"
+                };
 
-            for( i = 1; i <= 12; i++ ){
-                if( atoi(month) != 0 ){
-                    if( atoi(month) == i ) return 1;
+                int isValidMonth(char month[]){
+                /*******************************************************************************
+                    This function checks if the argument month is a valid month or not.
+                    It returns the numerical value of the month if true, else return 0.
+                *******************************************************************************/
+                    char *months1[] = {
+                        "",
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    };
+                    char *months2[] = {
+                        "",
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sept",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                    };
+                    int i;
+
+                    for( i = 1; i <= NUMBER_OF_MONTHS; i++ ){
+                        // if i is in [1, 12]
+                        if( atoi(month) != 0 ){
+                            if( atoi(month) == i ) return i;
+                        }
+                        // else if i matches any of the char months array
+                        else{
+                            if( strcmp(month, months1[i]) == 0 ) return i;
+                            if( strcmp(month, months2[i]) == 0 ) return i;
+                        }
+                    }
+                    return FALSE;
+                }// end of isValidMonth
+
+                int getDaycode(int year){
+                /*******************************************************************************
+                    This function computes the daycode to determine when the day will start
+                    in a given month/year.
+                *******************************************************************************/
+                    int daycode;
+                    int d1, d2, d3;
+
+                    d1 = (year - 1)/ 4;
+                    d2 = (year - 1)/ 100.;
+                    d3 = (year - 1)/ 400.;
+                    daycode = (year + d1 - d2 + d3) % 7;
+                    return daycode;
+                }// end of getDaycode
+
+                void isLeapYear(int year){
+                /*******************************************************************************
+                    This function checks if it is a leapyear or not.
+                *******************************************************************************/
+                    if(year% 4 == FALSE && year%100 != FALSE || year%400 == FALSE){
+                        daysInMonth[2] = 29;  // if leap year, change February's days to 29
+                    }    
+                    else{
+                        daysInMonth[2] = 28;  // retain to 28
+                    }    
+                }// end of isLeapYear
+
+                void displayCalendar(int year, int month, int daycode){
+                /*******************************************************************************
+                    This function displays the calendar
+                *******************************************************************************/
+                    int m, day;
+
+                    if( month == 0 ){
+                        for ( m = 1; m <= 12; m++ ){
+                            
+                            printf("\n%s %d", months[m], year);
+                            printf("\n\nSu Mo Tu We Th Fr Sa\n" );            
+
+                            // find correct position for the first date
+                            for ( day = 1; day <= daycode * 3; day++ ){
+                                printf(" ");
+                            }
+
+                            // display dates for month m
+                            for ( day = 1; day <= daysInMonth[m]; day++ ){
+                                if(day > 9) printf("%d", day );
+                                else printf(" %d", day );
+
+                                // if day is before Saturday
+                                if ( ( day + daycode ) % 7 > 0 ){                
+                                    printf(" ");
+                                }
+                                // else, new line for Sunday
+                                else{
+                                    printf("\n");
+                                }
+                            }
+                                
+                            // update position for month m+1
+                            daycode = ( daycode + daysInMonth[m] ) % 7;
+                        }    
+                    }
+                    // display only when m is equal to month
+                    else{
+                        for ( m = 1; m <= 12; m++ ){
+                            
+                            if(m == month) printf("\n%s %d", months[m], year);
+                            if(m == month) printf("\n\nSu Mo Tu We Th Fr Sa\n" );            
+
+                            // find correct position for the first date
+                            for ( day = 1; day <= daycode * 3; day++ ){
+                                if(m == month) printf(" ");
+                            }
+
+                            // display dates for month m
+                            for ( day = 1; day <= daysInMonth[m]; day++ ){
+                                if(m == month){
+                                    if(day > 9) printf("%d", day );
+                                    else printf(" %d", day );
+                                }
+
+                                // if day is before Saturday
+                                if ( ( day + daycode ) % 7 > 0 ){                
+                                     if(m == month)printf(" ");
+                                }
+                                // else, new line for Sunday
+                                else{
+                                    if(m == month) printf("\n");
+                                }
+                            }
+                                
+                            // update position for month m+1
+                            daycode = ( daycode + daysInMonth[m] ) % 7;
+                            // if m is already done being printed
+                            if(m == month) break;
+                        }
+                    }
+                    printf("\n");
                 }
-                else{
-                    if( strcmp(month, months1[i]) == 0 ) return 1;
-                    if( strcmp(month, months2[i]) == 0 ) return 1;
+
+                u=strtok(0," ");
+
+                if(strcmp(u, "-m")==0){
+                  m=strtok(0," ");
+                  month = isValidMonth(m);
+
+                  if(month){
+                    year = time_systime.year;
+                    daycode = getDaycode(year);
+                    isLeapYear(year);
+                    displayCalendar(year, month, daycode);
+                  }
+                  else if(m != 0){
+                    printf("cal: invalid argument\n");
+                  }
+                  else{ // no argument
+                    printf("cal missing argument for option -m.\n");
+                  }
                 }
-            }
-            return 0;
-        }
-        printf("%d\n", isValidMonth("Janu"));
-        printf("%d\n", isValidMonth("Jan"));
-        printf("%d\n", isValidMonth("-1"));
+                else if(strcmp(u, "-y")==0){
+                  y=strtok(0," ");
+
+                  if(y != 0){
+                    year = atoi(y);
+
+                    if( year == 0 ) printf("cal: invalid argument\n");
+                    else if( year > 9999 || year < 1) printf("cal: year `%d' not in range 1..9999\n", year);           
+                    else if( year >= 1 && year <= 9999 ){
+                        month = 0;
+                        daycode = getDaycode(year);
+                        isLeapYear(year);
+                        displayCalendar(year, month, daycode);
+                    }
+                    else{
+                      printf("cal: invalid argument\n");
+                    }
+                  }
+                  else{ // cal -y
+                    month = 0;
+                    year = time_systime.year;            
+
+                    daycode = getDaycode(year);
+                    isLeapYear(year);
+                    displayCalendar(year, month, daycode);
+                  }
+                }
+                else if(u != 0){
+                    printf("cal: invalid argument\n");
+                }
+                else{ // cal ONLY
+                  month = time_systime.month;
+                  year = time_systime.year;
+
+                  daycode = getDaycode(year);
+                  isLeapYear(year);
+                  displayCalendar(year, month, daycode);
+                }
+
     }
               else
                  /* PALINDROME */
