@@ -965,35 +965,35 @@ int console_execute(const char *str)
                 *******************************************************************************/
                     char *months1[] = {
                         "",
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December"
+                        "JANUARY",
+                        "FEBRUARY",
+                        "MARCH",
+                        "APRIL",
+                        "MAY",
+                        "JUNE",
+                        "JULY",
+                        "AUGUST",
+                        "SEPTEMBER",
+                        "OCTOBER",
+                        "NOVEMBER",
+                        "DECEMBER"
                     };
                     char *months2[] = {
                         "",
-                        "Jan",
-                        "Feb",
-                        "Mar",
-                        "Apr",
-                        "May",
-                        "Jun",
-                        "Jul",
-                        "Aug",
-                        "Sept",
-                        "Oct",
-                        "Nov",
-                        "Dec",
+                        "JAN",
+                        "FEB",
+                        "MAR",
+                        "APR",
+                        "MAY",
+                        "JUN",
+                        "JUL",
+                        "AUG",
+                        "SEPT",
+                        "OCT",
+                        "NOV",
+                        "DEC"
                     };
-                    int i;
+                    int i, j;
 
                     for( i = 1; i <= NUMBER_OF_MONTHS; i++ ){
                         // if i is in [1, 12]
@@ -1002,6 +1002,11 @@ int console_execute(const char *str)
                         }
                         // else if i matches any of the char months array
                         else{
+
+                            for( j = 0; j < strlen(month); j++ ){
+                              month[j] = toupper(month[j]);
+                            }
+
                             if( strcmp(month, months1[i]) == 0 ) return i;
                             if( strcmp(month, months2[i]) == 0 ) return i;
                         }
